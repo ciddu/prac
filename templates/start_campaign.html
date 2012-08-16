@@ -1,0 +1,23 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
+	
+<head>
+		
+</head>
+
+<body>
+	<form method="post">
+		{% csrf_token %}
+		{{form.campaign.label_tag}}
+		{{form.campaign}}
+		<br>
+		{{form.patients.label_tag}}
+		<textarea style="margin: 2px; height: 222px; width: 548px;" id="id_patients" rows="10" cols="40" name="patients">{% for items in content %} {{items.primary_email}},	{% endfor %}</textarea>
+		<br>
+	<input type="submit" value="start campaign">
+	</form>
+</body>
+
+</html>
+
+		

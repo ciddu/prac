@@ -1,0 +1,25 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
+	
+<head>
+		
+</head>
+
+<body>
+	<form method="post">
+		{% csrf_token %}
+
+		{% for camp in usercampaign %}
+		How did you come to know about {{camp.campaign.doctor_id.name}}
+		<textarea  name="know" >{{camp.campaign}}</textarea>
+
+		{% endfor %}
+
+
+	<input type="submit">
+	</form>
+</body>
+
+</html>
+
+		
