@@ -15,6 +15,12 @@
 		<textarea style="margin: 2px; height: 222px; width: 548px;" id="id_patients" rows="10" cols="40" name="patients">{% for items in content %} {{items.primary_email}},	{% endfor %}</textarea>
 		<br>
 	<input type="submit" value="start campaign">
+		{% if get == 1 %}
+			You cant sent the campaign to following people as they are not your patients:
+			{% for items in not_patient %}
+				<p>{{items}}</p>
+			{% endfor %}
+		{% endif %}
 	</form>
 </body>
 

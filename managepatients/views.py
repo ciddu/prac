@@ -113,7 +113,12 @@ def login_as_patient(request):
 	return render_to_response('login_as_patient.html',{'form':form},RequestContext(request))
 
 def start_campaign(request):
-
+	no_patient = request.GET.get('no_patients', '')
+	if no_patient == 'yes':
+		get = 1
+	else:
+		get = 0
+	not_patient = []
 	form = CampaignForm(request.POST or None)
 	if form.is_valid():
 
@@ -129,12 +134,19 @@ def start_campaign(request):
 			try:
 				user = User.objects.get(primary_email=email)
 			except:
-				pass
+				not_patient.append(email)
 			else:
 				save_user_campaign(campaign, user)
-		return HttpResponseRedirect('/start/')
+
+		if  len(not_patient) == 0:
+			return HttpResponseRedirect('/start/')
+		else:
+			request.session['not_patient'] = not_patient
+			return HttpResponseRedirect('/start/?no_patients=yes')
 	return render_to_response('start_campaign.html',{'form':form, 
-													 'content':request.session['patients']},
+													 'content':request.session['patients'],
+													 'not_patient':request.session['not_patient'],
+													 'get':get},
 													 RequestContext(request))
 
 def came_to_know_campaign(request):
