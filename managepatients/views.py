@@ -113,8 +113,10 @@ def login_as_patient(request):
 	return render_to_response('login_as_patient.html',{'form':form},RequestContext(request))
 
 def start_campaign(request):
-
-	request.session['not_patient'] = []
+	try:
+		not_patient = request.session['not_patient']
+	except:
+		request.session['not_patient'] = []
 	no_patient = request.GET.get('no_patients', '')
 	if no_patient == 'yes':
 		get = 1
@@ -130,13 +132,15 @@ def start_campaign(request):
 		campaign = save_campaign(campaign_name, doctor_id)
 
 		patients = form.cleaned_data['patients']
-		patients = patients.split(',\t')
+		patients = list(set(patients.split(',\t')))
 		for email in patients:
 			email = email.strip()
+
 			try:
 				user = User.objects.get(primary_email=email)
 			except:
 				not_patient.append(email)
+				print not_patient
 			else:
 				save_user_campaign(campaign, user)
 
