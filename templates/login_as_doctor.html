@@ -6,11 +6,22 @@
 </head>
 
 <body>
+
+	{% if loggedin == 0 %}
+	<form method="post">
+		{% csrf_token %}
+		{% for field in form %}
+		{{field.label_tag}}
+		{{field}}
+		{% endfor %}
+	<input type="submit" value="Login">
+	</form>
+	{% else %}
 	<a href="/start/">Start Campaign</a>
 	{% for i,j in campaign %}
 	<p>{{j}} has been seen by {{i}} people.</p>
 	{% endfor %}
-	
+	{% endif %}
 </body>
 
 </html>

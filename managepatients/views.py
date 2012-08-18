@@ -17,16 +17,13 @@ ROLE_API_URL = API_URL % "roles"
 PATIENT_API_URL = API_URL % "patients"
 DOCTOR_API_URL = API_URL % "practice/profile"
 
-USERNAME = 'ciddu.shashank@gmail.com'
-PASSWORD = 'shashank'
 
 
-def connect_to_api():
+def connect_to_api(username, password):
 	"""
 	Connects to Practo API
 	"""
-
-	data = {'username':USERNAME, 'password':PASSWORD}
+	data = {'username':username, 'password':password}
 	r = requests.post(SESSION_API_URL, data=data)
 
 	return r
@@ -36,14 +33,23 @@ def index(request):
 
 def login_as_doctor(request):
 	patients = []
+	a = []
+	form = LoginForm(request.POST or None)
 	try:
 		content  = request.session['content']
 		headers = request.session['headers']
 	except:
-		r = connect_to_api()
-		request.session['content'] = r.content
-		request.session['headers'] = r.headers
+		request.session['loggedin'] = 0
+		if form.is_valid():
+			username = form.cleaned_data['username']
+			password = form.cleaned_data['password']
+			r = connect_to_api(username, password)
+			request.session['content'] = r.content
+			request.session['headers'] = r.headers
+			return HttpResponseRedirect('/login/doctor')
 	else:		
+
+		request.session['loggedin'] = 1
 		print request.session['headers']
 		xauth_token = headers['set-cookie'].split(';')[0]
 		xauth_token = xauth_token.split('=')[1]
@@ -79,15 +85,16 @@ def login_as_doctor(request):
 			doctor = json.loads(r.content)
 			request.session['doctor'] = doctor
 		save_doctor(doctor['id'], doctor['name'])
-		a = []
 		campaigns = Campaign.objects.filter(doctor_id=doctor['id'])
 		for items in campaigns:
 			user_campaign = UserCampaign.objects.filter(campaign=items.id, seen_campaign=True)
 			a.append((len(user_campaign), items.campaign_name))
-		print a
 
+	loggedin = request.session['loggedin']
 	return render_to_response('login_as_doctor.html',{'content':patients,
-														'campaign':a},RequestContext(request))
+													  'campaign':a,
+													  'form':form,
+													  'loggedin':loggedin},RequestContext(request))
 
 def login_as_patient(request):
 	form = LoginForm(request.POST or None)
