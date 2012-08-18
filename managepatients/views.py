@@ -113,6 +113,8 @@ def login_as_patient(request):
 	return render_to_response('login_as_patient.html',{'form':form},RequestContext(request))
 
 def start_campaign(request):
+
+	request.session['not_patient'] = []
 	no_patient = request.GET.get('no_patients', '')
 	if no_patient == 'yes':
 		get = 1
@@ -139,7 +141,6 @@ def start_campaign(request):
 				save_user_campaign(campaign, user)
 
 		if  len(not_patient) == 0:
-			request.session['not_patient'] = None
 			return HttpResponseRedirect('/start/')
 		else:
 			request.session['not_patient'] = not_patient
