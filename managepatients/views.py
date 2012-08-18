@@ -139,6 +139,7 @@ def start_campaign(request):
 				save_user_campaign(campaign, user)
 
 		if  len(not_patient) == 0:
+			request.session['not_patient'] = None
 			return HttpResponseRedirect('/start/')
 		else:
 			request.session['not_patient'] = not_patient
