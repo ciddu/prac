@@ -162,7 +162,7 @@ def came_to_know_campaign(request):
 	if form.is_valid():
 		know = form.cleaned_data['know']
 		campaign = Campaign.objects.get(campaign_name=know)
-		save_user_campaign(campaign, user)
+		verify_user_campaign(campaign, user)
 	return render_to_response('came_to_know_campaign.html',{'usercampaign':usercampaign,
 															'form':form},
 													 RequestContext(request))
@@ -185,13 +185,16 @@ def save_user_campaign(campaign_id, user_id):
 	except:
 		user_campaign = UserCampaign(userid=user_id, campaign=campaign_id)
 		user_campaign.save()
-	else:
-		try:
-			user_campaign = UserCampaign.objects.get(userid=user_id.id, campaign=campaign_id.id, seen_campaign=True)
-		except:
-			user_campaign = UserCampaign(id=user_campaign.id, userid=user_campaign.userid, campaign=user_campaign.campaign, seen_campaign=True)
 
-			user_campaign.save()
+def verify_user_campaign(campaign_id, user_id):
+	try:
+		user_campaign = UserCampaign.objects.get(userid=user_id.id, campaign=campaign_id.id, seen_campaign=False)
+	except:
+		pass
+	else:
+		user_campaign = UserCampaign(id=user_campaign.id, userid=user_campaign.userid, campaign=user_campaign.campaign, seen_campaign=True)
+
+		user_campaign.save()
 
 
 def save_user(id, name, primary_email, primary_mobile, practice_id, has_photo):
